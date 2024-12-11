@@ -78,8 +78,8 @@
                             <el-button :loading="scope.row.bannersLoading" @click="handleSetBanners(scope.row)"
                                 class="px-1" :type="scope.row.goods_banner.length == 0? 'danger' : 'primary' "
                                 size="small" text>设置轮播图</el-button>
-                            <el-button :type="scope.row.content.length == 0 ? 'danger' : 'primary'" class="px-1"
-                                type="primary" size="small" text @click="handleSetContent(scope.row)"
+                            <el-button :type="!scope.row.content ? 'danger' : 'primary'" class="px-1" size="small" text
+                                @click="handleSetContent(scope.row)"
                                 :loading="scope.row.contentLoading">设置商品详情</el-button>
                             <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
                                 <template #reference>
@@ -156,7 +156,7 @@
         </el-card>
 
         <Banners ref="bannersRef" @reloadData="getData" />
-        <Content ref="contentRef"/>
+        <Content ref="contentRef" @reloadData="getData" />
     </div>
 </template>
 
@@ -273,7 +273,7 @@ getCategoryList().then(res => {
 const bannersRef = ref(null)
 const handleSetBanners = (row) => bannersRef.value.open(row)
 
-// 设置商品
+// 设置商品详情
 const contentRef = ref(null)
 const handleSetContent = (row) => contentRef.value.open(row)
 

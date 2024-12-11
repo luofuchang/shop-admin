@@ -1,5 +1,6 @@
 <template>
     <editor v-model="content" tag-name="div" :init="init" />
+    <ChooseImage :preview="false" ref="chooseImageRef" :limit="9" />
 </template>
 <script setup>
 import tinymce from "tinymce/tinymce";
@@ -39,6 +40,11 @@ import "tinymce/plugins/template" //插入模板
 import "tinymce/plugins/visualblocks"
 import "tinymce/plugins/visualchars"
 import "tinymce/plugins/wordcount" // 字数统计插件
+import ChooseImage from "./ChooseImage.vue";
+
+// ref
+const chooseImageRef = ref(null)
+
 // v-model
 const props = defineProps({
     modelValue: String,
@@ -53,13 +59,13 @@ const init = {
     menubar: false, // 隐藏菜单栏
     autoresize_bottom_margin: 50,
     max_height: 500,
-    min_height: 450,
+    min_height: 400,
     // height: 320,
     toolbar_mode: "none",
     plugins:
         'wordcount visualchars visualblocks template searchreplace save quickbars preview pagebreak nonbreaking media insertdatetime importcss image help fullscreen directionality codesample code charmap link code table lists advlist anchor autolink autoresize autosave',
     toolbar:
-        "formats undo redo fontsizeselect fontselect ltr rtl searchreplace media | outdent indent aligncenter alignleft alignright alignjustify lineheight underline quicklink h2 h3 blockquote numlist bullist table removeformat forecolor backcolor bold italic strikethrough hr link preview fullscreen help ",
+        "formats undo redo fontsizeselect fontselect ltr rtl searchreplace media imageUpload | outdent indent aligncenter alignleft alignright alignjustify lineheight underline quicklink h2 h3 blockquote numlist bullist table removeformat forecolor backcolor bold italic strikethrough hr link preview fullscreen help ",
     content_style: "p {margin: 5px 0; font-size: 14px}",
     fontsize_formats: "12px 14px 16px 18px 24px 36px 48px 56px 72px",
     font_formats: "微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方= PingFang SC, Microsoft YaHei, sans- serif; 宋体 = simsun, serif; 仿宋体 = FangSong, serif; 黑体 = SimHei, sans - serif; Arial = arial, helvetica, sans - serif;Arial Black = arial black, avant garde;Book Antiqua = book antiqua, palatino; ",
@@ -67,6 +73,20 @@ const init = {
     elementpath: false,
     resize: false, // 禁止改变大小
     statusbar: false, // 隐藏底部状态栏
+    setup: (editor) => {
+        editor.ui.registry.addButton("imageUpload", {
+            tooltip: "插入图片",
+            icon: "image",
+            onAction() {
+                chooseImageRef.value.open((data) => {
+                    data.forEach(url => {
+                        editor.insertContent(`<img src=${url} style="width: 100%"/>`)
+                    })
+                })
+
+            }
+        })
+    }
 }
 tinymce.init; // 初始化
 const content = ref(props.modelValue)
