@@ -25,7 +25,7 @@
                 @delete="handleMultiDelete">
                 <el-button v-if="searchForm.tab == 'all' || searchForm.tab == 'off'" size="small"
                     @click="handleMultiStatusChange(1)">上架</el-button>
-                <el-button v-if="searchForm.tab == 'all' || searchForm.tab == 'saling' " size="small"
+                <el-button v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'" size="small"
                     @click="handleMultiStatusChange(0)">下架</el-button>
             </ListHeader>
 
@@ -72,15 +72,21 @@
                 <el-table-column label="操作" align="center">
                     <template #default="scope">
                         <div v-if="searchForm.tab != 'delete'">
+                            <!-- 修改 -->
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
-                            <el-button class="px-1" type="primary" size="small" text>商品规格</el-button>
+                            <!-- 商品规格 -->
+                            <el-button :loading="scope.row.skusLoading" @click="handleSetSkus(scope.row)" class="px-1"
+                                type="primary" size="small" text>商品规格</el-button>
+                            <!-- 设置轮播图 -->
                             <el-button :loading="scope.row.bannersLoading" @click="handleSetBanners(scope.row)"
-                                class="px-1" :type="scope.row.goods_banner.length == 0? 'danger' : 'primary' "
+                                class="px-1" :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'"
                                 size="small" text>设置轮播图</el-button>
+                            <!-- 设置商品详情 -->
                             <el-button :type="!scope.row.content ? 'danger' : 'primary'" class="px-1" size="small" text
                                 @click="handleSetContent(scope.row)"
                                 :loading="scope.row.contentLoading">设置商品详情</el-button>
+                            <!-- 删除 -->
                             <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
                                 <template #reference>
                                     <el-button class="px-1" type="primary" size="small" text>删除</el-button>
@@ -157,6 +163,7 @@
 
         <Banners ref="bannersRef" @reloadData="getData" />
         <Content ref="contentRef" @reloadData="getData" />
+        <Skus ref="skusRef" @reloadData="getData" />
     </div>
 </template>
 
@@ -172,6 +179,7 @@ import Search from '~/components/Search.vue';
 import SearchItem from '~/components/SearchItem.vue';
 import Banners from './banners.vue';
 import Content from './content.vue';
+import Skus from './skus.vue';
 
 const {
     searchForm,
@@ -198,6 +206,7 @@ const {
         tableData.value = res.list.map(o => {
             o.bannersLoading = false
             o.contentLoading = false
+            o.skusLoading = false
             return o
         }),
             total.value = res.totalCount
@@ -277,5 +286,8 @@ const handleSetBanners = (row) => bannersRef.value.open(row)
 const contentRef = ref(null)
 const handleSetContent = (row) => contentRef.value.open(row)
 
+// 设置商品规格
+const skusRef = ref(null)
+const handleSetSkus = (row) => skusRef.value.open(row)
 
 </script>
