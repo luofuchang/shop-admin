@@ -1,5 +1,5 @@
 <template>
-    <FormDrawer size="40%" ref="formDrawerRef" title="设置商品规格" @submit="submit" destroy-on-close>
+    <FormDrawer size="70%" ref="formDrawerRef" title="设置商品规格" @submit="submit" destroy-on-close>
         <el-form :model="form" :label-width="'80'">
             <el-form-item label="规格类型">
                 <el-radio-group v-model="form.sku_type">
@@ -41,11 +41,10 @@
             </template>
             <!-- 多规格 -->
             <template v-else>
-                多规格
+                <SkuCard />
             </template>
         </el-form>
     </FormDrawer>
-
 </template>
 
 <script setup>
@@ -53,12 +52,13 @@ import { reactive, ref } from 'vue';
 import { updateSkus, readGoods } from '~/api/goods';
 import FormDrawer from '~/components/FormDrawer.vue';
 import { myNotification } from '~/composables/util';
+import SkuCard from './components/SkuCard.vue';
+import { goods_id, initSkuCardList } from '~/composables/useSkus'
 
 // 弹框组件ref
 const formDrawerRef = ref(null)
 
-// 提交更改所需参数，id和content
-const goods_id = ref(0)
+// 提交更改所需参数
 const form = reactive({
     sku_type: 0,
     "sku_value": {
@@ -93,6 +93,7 @@ const open = (row) => {
             "weight": 0,
             "volume": 0
         }
+        initSkuCardList(res)
         // 打开商品详情对话框
         formDrawerRef.value.open()
     }).finally(() => {
@@ -103,15 +104,30 @@ const open = (row) => {
 }
 const emit = defineEmits(["reloadData"])
 
+/**
+ * 提交函数，用于更新商品规格信息
+ * 此函数首先显示表单加载状态，然后调用updateSkus函数更新商品规格
+ * 更新成功后，显示成功通知，关闭表单抽屉，并触发父组件的reloadData事件以重新加载数据
+ * 无论成功与否，最后都会隐藏表单的加载状态
+ */
 const submit = () => {
+    // 显示表单加载状态
     formDrawerRef.value.showLoading()
+    
+    // 调用更新商品规格的API
     updateSkus(goods_id.value, form)
         .then(res => {
+            // 更新成功后，显示通知
             myNotification("设置商品规格成功")
+            // 关闭表单抽屉
             formDrawerRef.value.close()
+            // 触发父组件的reloadData事件，以便重新加载数据
             emit("reloadData")
         })
-        .finally(() => formDrawerRef.value.hideLoading())
+        .finally(() => {
+            // 无论成功与否，最后都隐藏表单的加载状态
+            formDrawerRef.value.hideLoading()
+        })
 }
 
 defineExpose({

@@ -57,3 +57,19 @@ export function queryParamToUrl(query) {
   r = r ? ("?" + r) : ""
   return r
 }
+
+// 上移方法
+export function useArrayUp(arr, index) {
+  if (index === 0) return
+  let temp = arr[index]
+  arr[index] = arr[index - 1]
+  arr[index - 1] = temp
+}
+// 下移
+export function useArrayDown(arr, index) {
+  if (index === arr.length - 1) return
+  let temp = arr[index]
+  arr[index] = arr[index + 1]
+  arr[index + 1] = temp
+}
+
