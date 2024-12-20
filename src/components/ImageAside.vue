@@ -27,7 +27,7 @@ import { computed, reactive, ref } from 'vue';
 import AsideList from './AsideList.vue';
 import { getImageClassList, createImageClassList, updateImageClass, deleteImageClass } from '~/api/image-class';
 import FormDrawer from './FormDrawer.vue';
-import { myNotification, myMessageBox } from '~/composables/util';
+import { myNotification } from '~/composables/util';
 
 
 const list = ref([])
